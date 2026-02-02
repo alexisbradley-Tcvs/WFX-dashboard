@@ -17,88 +17,50 @@ module.exports = async (req, res) => {
   const clientSecret = 'tmu8oqSEFCftE6ovWoW2XZFB0yTWIXxwGPeMC1pa';
   
   try {
-    // Try Method 1: Standard OAuth with form data
-    let tokenResponse = await fetch('https://api.wfxondemand.com/oauth/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
-    });
+    // Method 1: Try as query parameters
+    let url = `https://api.wfxondemand.com/api/v1/${endpoint}?client_id=${clientId}&client_secret=${clientSecret}`;
+    let response = await fetch(url);
     
-    // Try Method 2: OAuth with Basic Auth header
-    if (!tokenResponse.ok) {
+    // Method 2: Try with Basic Auth using client credentials
+    if (!response.ok) {
       const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-      tokenResponse = await fetch('https://api.wfxondemand.com/oauth/token', {
-        method: 'POST',
+      response = await fetch(`https://api.wfxondemand.com/api/v1/${endpoint}`, {
         headers: {
           'Authorization': `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'grant_type=client_credentials'
+          'Content-Type': 'application/json'
+        }
       });
     }
     
-    // Try Method 3: OAuth with JSON body
-    if (!tokenResponse.ok) {
-      tokenResponse = await fetch('https://api.wfxondemand.com/oauth/token', {
-        method: 'POST',
+    // Method 3: Try with API key header
+    if (!response.ok) {
+      response = await fetch(`https://api.wfxondemand.com/api/v1/${endpoint}`, {
         headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          grant_type: 'client_credentials',
-          client_id: clientId,
-          client_secret: clientSecret
-        })
+          'X-API-Key': clientId,
+          'X-API-Secret': clientSecret,
+          'Content-Type': 'application/json'
+        }
       });
     }
     
-    // Try Method 4: Different OAuth endpoint path
-    if (!tokenResponse.ok) {
-      tokenResponse = await fetch('https://api.wfxondemand.com/api/oauth/token', {
-        method: 'POST',
+    // Method 4: Try with custom WFX headers
+    if (!response.ok) {
+      response = await fetch(`https://api.wfxondemand.com/api/v1/${endpoint}`, {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
+          'client-id': clientId,
+          'client-secret': clientSecret,
+          'Content-Type': 'application/json'
+        }
       });
     }
-    
-    if (!tokenResponse.ok) {
-      const errorText = await tokenResponse.text();
-      console.error(`All OAuth methods failed: ${tokenResponse.status} - ${errorText}`);
-      return res.status(tokenResponse.status).json({ 
-        error: `Failed to get OAuth token after trying multiple methods: ${tokenResponse.status}`,
-        details: errorText,
-        hint: 'Please check WFX API documentation for correct OAuth endpoint and format'
-      });
-    }
-    
-    const tokenData = await tokenResponse.json();
-    const accessToken = tokenData.access_token;
-    
-    if (!accessToken) {
-      return res.status(500).json({
-        error: 'No access token in response',
-        tokenData: tokenData
-      });
-    }
-    
-    // Use access token to fetch data
-    const response = await fetch(`https://api.wfxondemand.com/api/v1/${endpoint}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    });
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`WFX API Error: ${response.status} - ${errorText}`);
+      console.error(`All methods failed: ${response.status} - ${errorText}`);
       return res.status(response.status).json({ 
-        error: `WFX API returned ${response.status}`,
-        details: errorText
+        error: `All authentication methods failed: ${response.status}`,
+        details: errorText,
+        hint: 'Need to check Parabola settings to see exact authentication method'
       });
     }
     
