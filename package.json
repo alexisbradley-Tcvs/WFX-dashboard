@@ -3,26 +3,3 @@
   "name": "wfx-dashboard",
   "version": "1.0.0"
 }
-```
-
-5. Scroll down and click **"Commit changes"**
-
----
-
-## **Step 2: Wait for Vercel to Redeploy**
-
-1. Wait **1-2 minutes** for Vercel to automatically redeploy
-2. You can watch the deployment at: https://vercel.com/dashboard
-3. Once it says "Ready", go to your dashboard: **https://wfx-dashboard.vercel.app/**
-4. Refresh the page
-
----
-
-## **Your Final File Structure Should Be:**
-```
-WFX-dashboard/
-├── index.html          ✅
-├── vercel.json         ✅
-├── package.json        ✅ (NEW - add this!)
-└── api/
-    └── wfx.js          ✅
