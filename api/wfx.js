@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -29,8 +27,10 @@ module.exports = async (req, res) => {
     
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`WFX API Error: ${response.status} - ${errorText}`);
       return res.status(response.status).json({ 
-        error: `WFX API returned ${response.status}: ${errorText}` 
+        error: `WFX API returned ${response.status}`,
+        details: errorText
       });
     }
     
@@ -39,6 +39,9 @@ module.exports = async (req, res) => {
     
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ 
+      error: error.message,
+      stack: error.stack 
+    });
   }
 };
