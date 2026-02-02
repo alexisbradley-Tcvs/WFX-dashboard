@@ -17,28 +17,75 @@ module.exports = async (req, res) => {
   const clientSecret = 'tmu8oqSEFCftE6ovWoW2XZFB0yTWIXxwGPeMC1pa';
   
   try {
-    // Step 1: Get OAuth access token
-    const tokenResponse = await fetch('https://api.wfxondemand.com/oauth/token', {
+    // Try Method 1: Standard OAuth with form data
+    let tokenResponse = await fetch('https://api.wfxondemand.com/oauth/token', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
     });
     
+    // Try Method 2: OAuth with Basic Auth header
+    if (!tokenResponse.ok) {
+      const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+      tokenResponse = await fetch('https://api.wfxondemand.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'grant_type=client_credentials'
+      });
+    }
+    
+    // Try Method 3: OAuth with JSON body
+    if (!tokenResponse.ok) {
+      tokenResponse = await fetch('https://api.wfxondemand.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          grant_type: 'client_credentials',
+          client_id: clientId,
+          client_secret: clientSecret
+        })
+      });
+    }
+    
+    // Try Method 4: Different OAuth endpoint path
+    if (!tokenResponse.ok) {
+      tokenResponse = await fetch('https://api.wfxondemand.com/api/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
+      });
+    }
+    
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error(`OAuth Token Error: ${tokenResponse.status} - ${errorText}`);
+      console.error(`All OAuth methods failed: ${tokenResponse.status} - ${errorText}`);
       return res.status(tokenResponse.status).json({ 
-        error: `Failed to get OAuth token: ${tokenResponse.status}`,
-        details: errorText
+        error: `Failed to get OAuth token after trying multiple methods: ${tokenResponse.status}`,
+        details: errorText,
+        hint: 'Please check WFX API documentation for correct OAuth endpoint and format'
       });
     }
     
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
     
-    // Step 2: Use access token to fetch data
+    if (!accessToken) {
+      return res.status(500).json({
+        error: 'No access token in response',
+        tokenData: tokenData
+      });
+    }
+    
+    // Use access token to fetch data
     const response = await fetch(`https://api.wfxondemand.com/api/v1/${endpoint}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
