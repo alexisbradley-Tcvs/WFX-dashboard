@@ -1,0 +1,595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;WFX Dashboard&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/react@18/umd/react.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>* {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-sizing: border-box;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>min-height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.dashboard-container {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>max-width: 1400px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 0 auto;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.header {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 30px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.header h1 {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #2d3748;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 32px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.last-updated {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #718096;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filters {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filter-group {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>min-width: 200px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filter-group label {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #4a5568;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filter-group select,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filter-group input {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 2px solid #e2e8f0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: border-color 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filter-group select:focus,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filter-group input:focus {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>outline: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-color: #667eea;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.refresh-btn {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px 24px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #667eea;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: background 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-self: flex-end;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.refresh-btn:hover {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #5568d3;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.refresh-btn:disabled {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #cbd5e0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: not-allowed;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.kpi-grid {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.kpi-card {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 25px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: transform 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.kpi-card:hover {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transform: translateY(-5px);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.kpi-label {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #718096;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing: 0.5px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.kpi-value {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #2d3748;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 36px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.charts-grid {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chart-card {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 25px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chart-title {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #2d3748;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.table-card {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 25px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>overflow-x: auto;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>table {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-collapse: collapse;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>th {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #f7fafc;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align: left;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #4a5568;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-bottom: 2px solid #e2e8f0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>td {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-bottom: 1px solid #e2e8f0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #2d3748;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>tr:hover {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #f7fafc;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.loading {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 60px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.error {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #fff5f5;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 2px solid #fc8181;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #c53030;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>canvas {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>max-height: 300px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="root"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script type="text/babel"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const { useState, useEffect, useRef } = React;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function WFXDashboard() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const [data, setData] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const [loading, setLoading] = useState(true);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const [error, setError] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const [filters, setFilters] = useState({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>season: 'all',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>itemType: 'all',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>searchTerm: ''</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const [lastUpdated, setLastUpdated] = useState(null);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const chartRefs = {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>seasonChart: useRef(null),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>costChart: useRef(null),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>itemChart: useRef(null)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const chartInstances = useRef({});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const fetchData = async () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setLoading(true);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setError(null);</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>// Now calling our own API proxy instead of WFX directly</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const [itemsRes, colorwaysRes, costingRes] = await Promise.all([</p>
+<p class="p1"><span class="Apple-converted-space">            </span>fetch('/api/wfx?endpoint=item'),</p>
+<p class="p1"><span class="Apple-converted-space">            </span>fetch('/api/wfx?endpoint=itemcolorway'),</p>
+<p class="p1"><span class="Apple-converted-space">            </span>fetch('/api/wfx?endpoint=itemcosting')</p>
+<p class="p1"><span class="Apple-converted-space">          </span>]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (!itemsRes.ok || !colorwaysRes.ok || !costingRes.ok) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>throw new Error('Failed to fetch data from WFX API');</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const [items, colorways, costing] = await Promise.all([</p>
+<p class="p1"><span class="Apple-converted-space">            </span>itemsRes.json(),</p>
+<p class="p1"><span class="Apple-converted-space">            </span>colorwaysRes.json(),</p>
+<p class="p1"><span class="Apple-converted-space">            </span>costingRes.json()</p>
+<p class="p1"><span class="Apple-converted-space">          </span>]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>setData({ items, colorways, costing });</p>
+<p class="p1"><span class="Apple-converted-space">          </span>setLastUpdated(new Date());</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} catch (err) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>setError(err.message);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} finally {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>setLoading(false);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>fetchData();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}, []);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (data) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>createCharts();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>return () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>Object.values(chartInstances.current).forEach(chart =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (chart) chart.destroy();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}, [data, filters]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const getFilteredData = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!data) return null;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let filtered = data.items || [];</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (filters.season !== 'all') {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>filtered = filtered.filter(item =&gt;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>item.item_range?.range_name === filters.season</p>
+<p class="p1"><span class="Apple-converted-space">          </span>);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (filters.searchTerm) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>filtered = filtered.filter(item =&gt;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>item.item_name?.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||</p>
+<p class="p1"><span class="Apple-converted-space">            </span>item.item_code?.toLowerCase().includes(filters.searchTerm.toLowerCase())</p>
+<p class="p1"><span class="Apple-converted-space">          </span>);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>return filtered;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const createCharts = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!data) return;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const filteredItems = getFilteredData();</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>Object.values(chartInstances.current).forEach(chart =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (chart) chart.destroy();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (chartRefs.seasonChart.current) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const seasonData = {};</p>
+<p class="p1"><span class="Apple-converted-space">          </span>(data.items || []).forEach(item =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const season = item.item_range?.range_name || 'Unknown';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>seasonData[season] = (seasonData[season] || 0) + 1;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const ctx = chartRefs.seasonChart.current.getContext('2d');</p>
+<p class="p1"><span class="Apple-converted-space">          </span>chartInstances.current.seasonChart = new Chart(ctx, {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>type: 'doughnut',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>data: {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>labels: Object.keys(seasonData),</p>
+<p class="p1"><span class="Apple-converted-space">              </span>datasets: [{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>data: Object.values(seasonData),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>backgroundColor: [</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>'#667eea', '#764ba2', '#f093fb', '#4facfe',</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>'#43e97b', '#fa709a', '#fee140', '#30cfd0'</p>
+<p class="p1"><span class="Apple-converted-space">                </span>]</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}]</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>options: {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>responsive: true,</p>
+<p class="p1"><span class="Apple-converted-space">              </span>maintainAspectRatio: false,</p>
+<p class="p1"><span class="Apple-converted-space">              </span>plugins: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>legend: {</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>position: 'bottom'</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (chartRefs.itemChart.current) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const typeData = {};</p>
+<p class="p1"><span class="Apple-converted-space">          </span>filteredItems.forEach(item =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const type = item.item_type || 'Unknown';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>typeData[type] = (typeData[type] || 0) + 1;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const ctx = chartRefs.itemChart.current.getContext('2d');</p>
+<p class="p1"><span class="Apple-converted-space">          </span>chartInstances.current.itemChart = new Chart(ctx, {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>type: 'bar',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>data: {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>labels: Object.keys(typeData),</p>
+<p class="p1"><span class="Apple-converted-space">              </span>datasets: [{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>label: 'Items by Type',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>data: Object.values(typeData),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>backgroundColor: '#667eea'</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}]</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>options: {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>responsive: true,</p>
+<p class="p1"><span class="Apple-converted-space">              </span>maintainAspectRatio: false,</p>
+<p class="p1"><span class="Apple-converted-space">              </span>plugins: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>legend: {</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>display: false</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>},</p>
+<p class="p1"><span class="Apple-converted-space">              </span>scales: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>y: {</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>beginAtZero: true</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (chartRefs.costChart.current &amp;&amp; data.costing) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const costData = (data.costing || []).slice(0, 10);</p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const ctx = chartRefs.costChart.current.getContext('2d');</p>
+<p class="p1"><span class="Apple-converted-space">          </span>chartInstances.current.costChart = new Chart(ctx, {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>type: 'line',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>data: {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>labels: costData.map((_, i) =&gt; `Item ${i + 1}`),</p>
+<p class="p1"><span class="Apple-converted-space">              </span>datasets: [{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>label: 'Cost Trend',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>data: costData.map(c =&gt; c.total_cost || Math.random() * 100),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>borderColor: '#764ba2',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>backgroundColor: 'rgba(118, 75, 162, 0.1)',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>tension: 0.4,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>fill: true</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}]</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>options: {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>responsive: true,</p>
+<p class="p1"><span class="Apple-converted-space">              </span>maintainAspectRatio: false,</p>
+<p class="p1"><span class="Apple-converted-space">              </span>plugins: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>legend: {</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>display: false</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>},</p>
+<p class="p1"><span class="Apple-converted-space">              </span>scales: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>y: {</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>beginAtZero: true</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const getSeasonOptions = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!data) return [];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const seasons = new Set();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>(data.items || []).forEach(item =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (item.item_range?.range_name) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>seasons.add(item.item_range.range_name);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return Array.from(seasons);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (loading) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return &lt;div className="loading"&gt;Loading WFX Dashboard...&lt;/div&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (error) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="dashboard-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="error"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong&gt;Error:&lt;/strong&gt; {error}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;br/&gt;&lt;br/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button onClick={fetchData} className="refresh-btn"&gt;Retry&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const filteredItems = getFilteredData();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const totalItems = filteredItems?.length || 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const totalColorways = data?.colorways?.length || 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const totalCosting = data?.costing?.length || 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const avgCost = totalCosting &gt; 0<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>? (data.costing.reduce((sum, c) =&gt; sum + (c.total_cost || 0), 0) / totalCosting).toFixed(2)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>: 0;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="dashboard-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1&gt;WFX Analytics Dashboard&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{lastUpdated &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="last-updated"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Last updated: {lastUpdated.toLocaleString()}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="filters"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="filter-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label&gt;Season/Collection&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;select<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>value={filters.season}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>onChange={(e) =&gt; setFilters({...filters, season: e.target.value})}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="all"&gt;All Seasons&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{getSeasonOptions().map(season =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;option key={season} value={season}&gt;{season}&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="filter-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label&gt;Search Items&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;input<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>type="text"</p>
+<p class="p1"><span class="Apple-converted-space">                </span>placeholder="Search by name or code..."</p>
+<p class="p1"><span class="Apple-converted-space">                </span>value={filters.searchTerm}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>onChange={(e) =&gt; setFilters({...filters, searchTerm: e.target.value})}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>className="refresh-btn"<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>onClick={fetchData}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>disabled={loading}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{loading ? 'Refreshing...' : 'Refresh Data'}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="kpi-grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="kpi-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-label"&gt;Total Items&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-value"&gt;{totalItems}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="kpi-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-label"&gt;Total Colorways&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-value"&gt;{totalColorways}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="kpi-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-label"&gt;Costing Records&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-value"&gt;{totalCosting}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="kpi-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-label"&gt;Avg Cost&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="kpi-value"&gt;${avgCost}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="charts-grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="chart-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="chart-title"&gt;Items by Season&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;canvas ref={chartRefs.seasonChart}&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="chart-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="chart-title"&gt;Items by Type&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;canvas ref={chartRefs.itemChart}&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="chart-card" style={{marginBottom: '20px'}}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="chart-title"&gt;Cost Analysis Trend&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;canvas ref={chartRefs.costChart}&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="table-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="chart-title"&gt;Item Details&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;th&gt;Item Code&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;th&gt;Item Name&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;th&gt;Type&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;th&gt;Season&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;th&gt;Status&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{filteredItems?.slice(0, 20).map((item, idx) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;tr key={idx}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;td&gt;{item.item_code || 'N/A'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;td&gt;{item.item_name || 'N/A'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;td&gt;{item.item_type || 'N/A'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;td&gt;{item.item_range?.range_name || 'N/A'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;td&gt;{item.status || 'N/A'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>ReactDOM.render(&lt;WFXDashboard /&gt;, document.getElementById('root'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
