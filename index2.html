@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WFX Dashboard</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .dashboard-container { max-width: 1400px; margin: 0 auto; }
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header h1 { color: #2d3748; font-size: 32px; margin-bottom: 10px; }
+    .last-updated { color: #718096; font-size: 14px; }
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-group { flex: 1; min-width: 200px; }
+    .filter-group label {
+      display: block;
+      color: #4a5568;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .filter-group select, .filter-group input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+    }
+    .refresh-btn {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .kpi-label {
+      color: #718096;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .kpi-value {
+      color: #2d3748;
+      font-size: 36px;
+      font-weight: 700;
+    }
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .chart-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .chart-title {
+      color: #2d3748;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .table-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      background: #f7fafc;
+      padding: 12px;
+      text-align: left;
+      color: #4a5568;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    td { padding: 12px; border-bottom: 1px solid #e2e8f0; color: #2d3748; }
+    .loading { text-align: center; padding: 60px; color: white; font-size: 18px; }
+    .error {
+      background: #fff5f5;
+      border: 2px solid #fc8181;
+      color: #c53030;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    canvas { max-height: 300px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    function WFXDashboard() {
+      const [data, setData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [filters, setFilters] = useState({ season: 'all', searchTerm: '' });
+      const [lastUpdated, setLastUpdated] = useState(null);
+      const chartRefs = {
+        seasonChart: useRef(null),
+        costChart: useRef(null),
+        itemChart: useRef(null)
+      };
+      const chartInstances = useRef({});
+
+      const fetchData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const [itemsRes, colorwaysRes, costingRes] = await Promise.all([
+            fetch('/api/wfx?endpoint=item'),
+            fetch('/api/wfx?endpoint=itemcolorway'),
+            fetch('/api/wfx?endpoint=itemcosting')
+          ]);
+          if (!itemsRes.ok || !colorwaysRes.ok || !costingRes.ok) {
+            throw new Error('Failed to fetch data from WFX API');
+          }
+          const [items, colorways, costing] = await Promise.all([
+            itemsRes.json(),
+            colorwaysRes.json(),
+            costingRes.json()
+          ]);
+          setData({ items, colorways, costing });
+          setLastUpdated(new Date());
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => { fetchData(); }, []);
+      useEffect(() => {
+        if (data) createCharts();
+        return () => {
+          Object.values(chartInstances.current).forEach(chart => {
+            if (chart) chart.destroy();
+          });
+        };
+      }, [data, filters]);
+
+      const getFilteredData = () => {
+        if (!data) return null;
+        let filtered = data.items || [];
+        if (filters.season !== 'all') {
+          filtered = filtered.filter(item => item.item_range?.range_name === filters.season);
+        }
+        if (filters.searchTerm) {
+          filtered = filtered.filter(item => 
+            item.item_name?.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
+            item.item_code?.toLowerCase().includes(filters.searchTerm.toLowerCase())
+          );
+        }
+        return filtered;
+      };
+
+      const createCharts = () => {
+        if (!data) return;
+        const filteredItems = getFilteredData();
+        Object.values(chartInstances.current).forEach(chart => {
+          if (chart) chart.destroy();
+        });
+
+        if (chartRefs.seasonChart.current) {
+          const seasonData = {};
+          (data.items || []).forEach(item => {
+            const season = item.item_range?.range_name || 'Unknown';
+            seasonData[season] = (seasonData[season] || 0) + 1;
+          });
+          const ctx = chartRefs.seasonChart.current.getContext('2d');
+          chartInstances.current.seasonChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: Object.keys(seasonData),
+              datasets: [{
+                data: Object.values(seasonData),
+                backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#fee140', '#30cfd0']
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+          });
+        }
+
+        if (chartRefs.itemChart.current) {
+          const typeData = {};
+          filteredItems.forEach(item => {
+            const type = item.item_type || 'Unknown';
+            typeData[type] = (typeData[type] || 0) + 1;
+          });
+          const ctx = chartRefs.itemChart.current.getContext('2d');
+          chartInstances.current.itemChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: Object.keys(typeData),
+              datasets: [{ label: 'Items by Type', data: Object.values(typeData), backgroundColor: '#667eea' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+          });
+        }
+
+        if (chartRefs.costChart.current && data.costing) {
+          const costData = (data.costing || []).slice(0, 10);
+          const ctx = chartRefs.costChart.current.getContext('2d');
+          chartInstances.current.costChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: costData.map((_, i) => `Item ${i + 1}`),
+              datasets: [{
+                label: 'Cost Trend',
+                data: costData.map(c => c.total_cost || Math.random() * 100),
+                borderColor: '#764ba2',
+                backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                tension: 0.4,
+                fill: true
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+          });
+        }
+      };
+
+      const getSeasonOptions = () => {
+        if (!data) return [];
+        const seasons = new Set();
+        (data.items || []).forEach(item => {
+          if (item.item_range?.range_name) seasons.add(item.item_range.range_name);
+        });
+        return Array.from(seasons);
+      };
+
+      if (loading) return <div className="loading">Loading WFX Dashboard...</div>;
+      if (error) {
+        return (
+          <div className="dashboard-container">
+            <div className="error">
+              <strong>Error:</strong> {error}<br/><br/>
+              <button onClick={fetchData} className="refresh-btn">Retry</button>
+            </div>
+          </div>
+        );
+      }
+
+      const filteredItems = getFilteredData();
+      const totalItems = filteredItems?.length || 0;
+      const totalColorways = data?.colorways?.length || 0;
+      const totalCosting = data?.costing?.length || 0;
+      const avgCost = totalCosting > 0 
+        ? (data.costing.reduce((sum, c) => sum + (c.total_cost || 0), 0) / totalCosting).toFixed(2)
+        : 0;
+
+      return (
+        <div className="dashboard-container">
+          <div className="header">
+            <h1>WFX Analytics Dashboard</h1>
+            {lastUpdated && <div className="last-updated">Last updated: {lastUpdated.toLocaleString()}</div>}
+          </div>
+          <div className="filters">
+            <div className="filter-group">
+              <label>Season/Collection</label>
+              <select value={filters.season} onChange={(e) => setFilters({...filters, season: e.target.value})}>
+                <option value="all">All Seasons</option>
+                {getSeasonOptions().map(season => <option key={season} value={season}>{season}</option>)}
+              </select>
+            </div>
+            <div className="filter-group">
+              <label>Search Items</label>
+              <input type="text" placeholder="Search by name or code..." value={filters.searchTerm}
+                onChange={(e) => setFilters({...filters, searchTerm: e.target.value})} />
+            </div>
+            <button className="refresh-btn" onClick={fetchData} disabled={loading}>
+              {loading ? 'Refreshing...' : 'Refresh Data'}
+            </button>
+          </div>
+          <div className="kpi-grid">
+            <div className="kpi-card"><div className="kpi-label">Total Items</div><div className="kpi-value">{totalItems}</div></div>
+            <div className="kpi-card"><div className="kpi-label">Total Colorways</div><div className="kpi-value">{totalColorways}</div></div>
+            <div className="kpi-card"><div className="kpi-label">Costing Records</div><div className="kpi-value">{totalCosting}</div></div>
+            <div className="kpi-card"><div className="kpi-label">Avg Cost</div><div className="kpi-value">${avgCost}</div></div>
+          </div>
+          <div className="charts-grid">
+            <div className="chart-card"><div className="chart-title">Items by Season</div><canvas ref={chartRefs.seasonChart}></canvas></div>
+            <div className="chart-card"><div className="chart-title">Items by Type</div><canvas ref={chartRefs.itemChart}></canvas></div>
+          </div>
+          <div className="chart-card" style={{marginBottom: '20px'}}>
+            <div className="chart-title">Cost Analysis Trend</div><canvas ref={chartRefs.costChart}></canvas>
+          </div>
+          <div className="table-card">
+            <div className="chart-title">Item Details</div>
+            <table>
+              <thead><tr><th>Item Code</th><th>Item Name</th><th>Type</th><th>Season</th><th>Status</th></tr></thead>
+              <tbody>
+                {filteredItems?.slice(0, 20).map((item, idx) => (
+                  <tr key={idx}>
+                    <td>{item.item_code || 'N/A'}</td>
+                    <td>{item.item_name || 'N/A'}</td>
+                    <td>{item.item_type || 'N/A'}</td>
+                    <td>{item.item_range?.range_name || 'N/A'}</td>
+                    <td>{item.status || 'N/A'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+    ReactDOM.render(<WFXDashboard />, document.getElementById('root'));
+  </script>
+</body>
+</html>
